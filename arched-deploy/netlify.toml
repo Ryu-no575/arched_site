@@ -1,0 +1,16 @@
+[build]
+  command = "node scripts/prepare-deploy109.mjs"
+  publish = "public"
+  functions = "netlify/functions"
+[build.environment]
+  NODE_VERSION = "22"
+[functions]
+  node_bundler = "esbuild"
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[functions.access]
+  included_files = ["private/manifest.json", "private/client/**", "private/script-*.js", "private/script-*.js.gz"]

@@ -1,0 +1,118 @@
+ARCHED 公開・更新手順（V109 / 2026-10-10）
+
+この手順は、まだ本番URLを作っていない場合の初回公開用です。
+今回はコードの修正と公開用ファイルの準備までです。実際のNetlify公開・ドメイン取得・決済設定は未実施です。
+
+使うファイル
+・ARCHED_Deploy_V109.zip：GitHubに置いてNetlifyへ公開するための構成。
+・ARCHED_Knowledge_Home_V109.zip：編集履歴や資料を含む完全な制作ソース。制作の継続用。
+・過去のARCHED_Light / owner preview：制作者用の閲覧版。認証を省略しているので販売サイトとして公開しない。
+
+1. GitHubとNetlifyのアカウントを用意
+https://github.com/
+https://app.netlify.com/
+WindowsまたはMacにはGitHub Desktopを入れると、コマンドを打たずに更新できます。
+https://desktop.github.com/
+購入者側にはGitHub、Netlify、Python、Node.jsのインストールは不要です。ブラウザーとインターネット接続だけで利用します。
+公開・ストレージ・転送量・ビルドには利用量に応じた費用が発生し得ます。Netlifyで予算と使用量を確認してください。
+
+2. 公開用フォルダーをGitHubに保存
+ARCHED_Deploy_V109.zipを展開します。
+GitHub Desktopで File → New repository を選び、名前を arched-site とし、保存先を自分の分かる場所にします。
+作られた arched-site フォルダーに、ZIP内の arched-deploy フォルダーの「中身」をコピーします。
+arched-site直下に netlify.toml / package.json / public / private / server / scripts / netlify がある状態にします。
+ZIP自体を置いたり、arched-deployを二重に入れたりしないでください。
+GitHub Desktopで変更一覧を確認し、Summaryに Initial ARCHED release と入力して Commit to main。
+Publish repository を押し、Keep this code private をオンにして公開します。
+コードを非公開にしても、後で作るサイトのURLには一般利用者がアクセスできます。有料部分のアクセスは会員認証で制御します。
+パスワード、Stripe秘密鍵、.env、会員データをGitHubに入れないでください。
+
+3. NetlifyからGitHubを接続
+Netlifyの Add new project → Import an existing project → GitHub を選択。
+arched-siteリポジトリを選びます。GitHubから求められるアクセス権は対象リポジトリを選択します。
+設定は以下です（通常はnetlify.tomlから読み込まれます）。
+  Production branch: main
+  Base directory: 空欄（リポジトリ直下）
+  Build command: node scripts/prepare-deploy109.mjs
+  Publish directory: public
+  Functions directory: netlify/functions
+  Node version: 22
+Deployを実行。最初はログイン・案内画面のURLを作ります。
+publicフォルダーだけのドラッグ＆ドロップ公開はしません。認証サーバーと画像の準備が必要です。
+
+4. URLを取得して管理者設定
+成功すると https://選ばれたプロジェクト名.netlify.app のURLが表示されます。
+Netlifyの Project configuration → Environment variables で次を設定します。
+  ARCHED_PUBLIC_URL = 実際のHTTPSのURL（末尾のパスや /?account=1 は付けない）
+  ARCHED_ADMIN_PASSWORD = 自分で作った十分に長いパスワード（最低16文字）
+  ARCHED_CONTACT_URL = HTTPSのお問い合わせ先（用意した場合）
+値はFunctionsが参照できる範囲に設定し、Productionに適用します。
+設定後、Deploysから再デプロイします。秘密情報はHTMLやnetlify.tomlに書きません。
+
+5. テスト会員で実際に使う
+サイトからテスト用の会員を登録し、ユーザー名を設定します。
+自分のURLの末尾に /owner.html を付けて管理者画面を開き、管理者パスワードでログイン。
+登録したテスト会員のメールアドレスに将来の利用期限を設定して、アクセスを付与します。
+会員としてログインし直して、Practice、Atlas、Museum、Map、Tapestryを確認します。
+10問解答→Savedを確認→ログアウト→再ログインで履歴が残ることを確認。
+別ブラウザーでも同じ会員でログインし、同期を確認。
+管理者画面でアクセスを停止した場合、ログインしていても有料データが読めなくなることも確認します。
+URLができたことだけでは、会員サービスや決済の検証が完了したことにはなりません。
+
+6. 決済を設定する
+現時点の実装はStripeの月額課金です。Paddle / Lemon Squeezyにはまだ接続していません。
+MoRを採用するなら、審査とサイト側の決済連携変更を先に行います。リンクを貼るだけでは利用権限は連動しません。
+Stripeを使う場合、テストモードで次をNetlifyに設定します。
+  STRIPE_SECRET_KEY
+  STRIPE_MONTHLY_PRICE_ID（1か月ごとの有効なPrice ID）
+  STRIPE_WEBHOOK_SECRET
+Customer Portalで解約機能を設定します。
+Webhook URL: 自分のHTTPSのURL/.netlify/functions/access?action=stripe-webhook
+必要なイベントは同梱の README_MEMBERSHIP_V56.md に記載。
+テスト購入→利用開始→継続課金→解約後の期限→返金・支払い失敗時の挙動を確認します。
+テスト鍵と本番鍵を混在させず、本番に移す場合はPrice IDとWebhook Secretも本番用へ変更します。
+価格・解約・返金条件、運営者情報、利用規約、プライバシー説明、素材・問題文の商用利用条件を確認してから販売します。
+
+7. 独自ドメインを接続
+ドメイン取得後、NetlifyのDomain managementで Add a domain you already own を選択し、取得したドメインを登録。
+ドメイン販売元のDNS設定に、Netlifyがその画面に表示するレコードを入力します。
+DNSの値はプロジェクトや設定方式で異なるので、他人の例の値をそのままコピーしません。
+HTTPSが有効になり独自ドメインで開けることを確認して、primary domainに設定。
+ARCHED_PUBLIC_URL、決済のWebhook URL、決済側の登録ドメインを新しいURLに更新します。
+ドメインが変わると以前のCookie・ブラウザー保存領域は共有されません。会員は再ログインし、サーバーに同期済みの履歴を取得します。
+初回販売前に独自ドメインを決めると、この移行を購入者にお願いせずに済みます。
+
+8. 同じURLのまま更新する
+同じリポジトリ・同じNetlifyプロジェクト・同じドメインを使い続けます。
+通常の流れ：GitHub Desktopで main の最新を取得 → 新しいブランチを作る → 修正ファイルを反映 → Commit → Publish branch / Push → Pull Requestを作る → Deploy Previewで確認 → mainにMerge。
+mainに入った変更はNetlifyが自動でビルドし、同じ本番URLに公開します。
+確認用URLが新しくできても、購入者へ案内する本番URLは変えません。
+修正版の配布を受けたら、対応する公開用フォルダーの中身を自分のリポジトリに反映してください。 .git は削除しません。
+private/app.htmlや教材の元データを直接編集した場合、client版の再生成が必要です。制作ソース側で python3 build_client87.py を実行してから公開用に反映します（PythonとPillowが必要）。
+公開ビルドではgzipを再生成し、画像をdeploy-specific Blobsへ配置します。サーバーの認証後に画像を読み出すため、publicに有料画像を移しません。
+会員・学習履歴は既存のsite-wide Blobsに保存します。arched-members-v49などの保存先を変更・削除したり、別の本番プロジェクトを毎回作ったりしないでください。
+履歴を消す移行を避け、データ形式を変える更新では別途移行・バックアップを準備します。
+
+9. 本番とテストを分ける
+Deploy Previewは見た目の確認に利用します。同じNetlifyプロジェクトのsite-wide Blobsは共有されるため、プレビューでも本番会員データに影響し得ます。
+購入・削除・返金・データ移行のテストには、別のNetlifyテストプロジェクト、テスト専用会員、Stripeテスト鍵を使ってください。
+不具合が出たら、GitHubで該当変更をrevertしてmainに反映するか、Netlifyで以前の正常なデプロイを再公開します。
+画像はデプロイに紐づくため、そのバージョンの画像と一緒に戻ります。会員データの変更はデプロイを戻しても元には戻りません。
+
+10. 対応目標と販売前の実機確認
+対応目標：更新済みのWindows / macOS / ChromeOS / Linuxの主要ブラウザー（Chrome・Edge・Firefox・Safari）、iOS Safari、Android Chrome。
+メモリー4GB程度のPCも考慮してLight表示を用意していますが、4GB実機で性能を測定して最低スペックを保証したわけではありません。
+Display: Autoは取得可能なメモリー・CPU・データ節約設定から軽量化。値が取得できないブラウザーでは手動でLightを選べます。切替で問題の途中状態をリセットしません。
+古いOS・更新できないブラウザー・JavaScript/Cookie無効・厳しい組織のアクセス制限は対応保証外です。
+今回の検証：Nodeによる保存制限/容量不足の疑似テスト、画像認証、既存の学習履歴・Atlasの減衰/復習回復、Mapの戻る操作、公開準備処理。
+未実施：実ブラウザーの画面描画、CPUを制限した性能測定、実機のWindows/Mac/iPhone等での操作、Netlify本番公開、実決済。
+販売前に以下を実施：1366×768と1920×1080、幅390px程度、ブラウザー200%拡大、キーボードTab/Enter、タッチ、低速回線、通信復帰、別会員への切替、再デプロイ後の履歴保持。
+Mapの392地点中261地点に同梱写真があり、131地点の外部写真取得は実環境で未確認です。全写真確認済み・出題範囲完全網羅・満点保証とは表示しないでください。
+
+公式参考（2026-10-10確認）
+https://docs.netlify.com/start/quickstarts/deploy-from-repository/
+https://docs.netlify.com/build/environment-variables/get-started/
+https://docs.netlify.com/deploy/deploy-overview/
+https://docs.netlify.com/manage/domains/domains-fundamentals/understand-domains/
+https://docs.netlify.com/build/frameworks/frameworks-api/
+https://docs.netlify.com/build/data-and-storage/netlify-blobs/

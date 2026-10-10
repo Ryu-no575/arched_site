@@ -1,0 +1,15 @@
+/* Narrow windows, browser zoom, keyboard and touch. Keep maps/timelines scrollable. */
+html{ -webkit-text-size-adjust:100%; text-size-adjust:100% }
+img{max-width:100%}button,a,input,select,summary{touch-action:manipulation}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #4258b7!important;outline-offset:3px}
+#displaySettings109{display:inline-flex;align-items:center;gap:5px;font:12px system-ui;color:inherit;white-space:nowrap;padding:4px}
+#displaySettings109 select{max-width:105px;padding:6px;border:1px solid #b6c1c8;border-radius:6px;background:#fff;color:#233446}
+#deviceNotice109{position:fixed;bottom:8px;left:12px;right:12px;margin:auto;max-width:760px;padding:12px 16px;background:#fff4d6;color:#463617;border:1px solid #a88128;border-radius:10px;z-index:9999;font:14px/1.5 system-ui;box-shadow:0 3px 15px #0002}
+.topnav>*,.qbody,.practice-media,.home-main,.museum-page46{min-width:0}
+.qbody,.church-facts54 dd,.work-note50{overflow-wrap:anywhere}
+dialog{max-width:calc(100vw - 24px);max-height:85vh;overflow:auto}
+.arched-light109 *, .arched-light109 *::before,.arched-light109 *::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+@media(max-width:1050px){.topnav{height:auto!important;min-height:72px;display:flex!important;flex-wrap:wrap;align-items:center;gap:6px;padding:8px 12px!important}.topnav .brand{margin-right:auto}.topnav .navitems{order:3;flex:1 1 100%;overflow-x:auto;justify-content:flex-start!important;max-width:100%;min-height:48px}.topnav .navitems .navitem{flex:1 0 70px!important;min-height:48px!important;width:auto!important}.member-controls57{display:flex!important;flex-wrap:wrap;gap:5px}.member-controls57 #memberSync58{max-width:145px;white-space:normal}.map-tools102{align-items:stretch}.map-tools102 select{max-width:100%}.map-page53{padding:12px!important}}
+@media(max-width:600px){.qbody{padding:16px!important}.qbottom{display:flex;flex-wrap:wrap;gap:8px}.qbottom>div{display:flex;flex-wrap:wrap;gap:6px}.map-tools51 input[type=search]{min-width:0!important;width:100%;flex-basis:100%}.map-header51{flex-wrap:wrap}.map-filter102{flex-wrap:wrap}.museum-tools45{flex-wrap:wrap}.museum-tools45>*{min-width:0;max-width:100%}.church-facts54{grid-template-columns:80px minmax(0,1fr)}.f66-header{flex-wrap:wrap}.f66-header input{max-width:100%}.f66-context{flex-wrap:wrap}.f66-context>span{overflow-wrap:anywhere}}
+@media(pointer:coarse){.qbtn,.choice,.map-filter102 button,.earth-controls104 button,.map-back108,summary{min-height:44px}.map-globe-pin103{min-width:28px;min-height:28px}}

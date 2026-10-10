@@ -1,0 +1,18 @@
+{
+  "name": "arched-mastery-competition",
+  "version": "109.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node server/dev.mjs",
+    "test": "node verify_ui57.cjs && node server/verify_access_v49.mjs && node server/verify_access_http_v49.mjs && node server/verify_billing_v56.mjs && node verify_map_v55.cjs && node verify_motion_v55.cjs && node server/verify_study58.mjs && node server/verify_purchase59.mjs && node server/verify_identity61.mjs && node server/verify_points62.mjs && node verify_photos62.cjs && node verify_photo_loading62.cjs && node verify_tapestry63.cjs && node verify_tapestry65.cjs",
+    "build": "node scripts/prepare-deploy109.mjs",
+    "test:release": "node verify_runtime109.cjs && node server/verify_media109.mjs && node audit_revision108.cjs && node audit_glow107.cjs"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^10.0.0"
+  }
+}
